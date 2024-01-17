@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 				break;
 			case 0:
+				if(enable_spotify) {
 				suboptions = optarg;
 				while(*suboptions) {
 					switch(getsubopt(&suboptions, token, &suboptvalue)) {
@@ -83,6 +84,7 @@ int main(int argc, char *argv[])
 							break;
 					}
 
+				}
 				}
 			default:
 				break;
@@ -118,14 +120,16 @@ int main(int argc, char *argv[])
 	free(config_file);
 
 	int sockfd_java = -1;
-	if(enable_spotify && (spotify_addr == NULL || spotify_port == NULL)) {
-		fprintf(stderr, "Erro with values of address or port!!\n");
-	} else {	
-		sockfd_java = connect_socket(spotify_addr, spotify_port);
+	if(enable_spotify) {
+		if(enable_spotify != 0 && (spotify_addr == NULL || spotify_port == NULL)) {
+			fprintf(stderr, "Erro with values of address or port!!\n");
+		} else {	
+			sockfd_java = connect_socket(spotify_addr, spotify_port);
 
-		if (sockfd_java == -1) {
-			fprintf(stderr, "Error trying to connecto to sptofiy-controller %s %s\n",spotify_addr,spotify_port);
-			exit(EXIT_FAILURE);
+			if (sockfd_java == -1) {
+				fprintf(stderr, "Error trying to connecto to sptofiy-controller %s %s\n",spotify_addr,spotify_port);
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
@@ -187,7 +191,6 @@ int main(int argc, char *argv[])
 		} else {
 			asprintf(&sent, "PRIVMSG #nempk1 :%s\n", str);
 			send_bytes = T_SSL_write(sockfdorg, sent, strlen(sent));
-			printf("Sent %s\n", sent);
 			if (send_bytes == -1) {
 				perror("Error on send");
 				exit(EXIT_FAILURE);	
