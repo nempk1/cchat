@@ -182,14 +182,15 @@ int main(int argc, char *argv[])
 	// send to socket.
 	char * str = NULL;
 	char * sent = NULL;
+	size_t len = 0;
 	while (1) {
 		int send_bytes = 0;
-		int num = scanf("%ms", &str);
+		int num = getline(&str, &len, stdin);
 		if (num == -1) {
 			perror("Error on read");
 			exit(0);
 		} else {
-			asprintf(&sent, "PRIVMSG #nempk1 :%s\n", str);
+			asprintf(&sent, "PRIVMSG #%s :%s\n", cfg->channel,str);
 			send_bytes = T_SSL_write(sockfdorg, sent, strlen(sent));
 			if (send_bytes == -1) {
 				perror("Error on send");
@@ -197,6 +198,7 @@ int main(int argc, char *argv[])
 			}
 			free(str);
 			free(sent);
+			str = NULL; len = 0;
 		}
 	}
 
@@ -216,34 +218,4 @@ int main(int argc, char *argv[])
 
 
 	exit(1);
-}
-
-
-
-int send_cfg(struct T_SSL *sockfd)
-{
-	size_t linesize = 250;
-	FILE *config_f = fopen("configs/cchat.config", "r");
-	if (config_f == NULL)
-		return 1;
-	else {
-		while(1) {
-			char *buffer = NULL;
-			size_t read = getline(&buffer, &linesize, config_f);
-			if (read == -1) {
-				free(buffer);
-				return 0;
-			} else if (buffer[0] == '/' && buffer[1] == '/') {
-				free(buffer);
-				continue;
-			} else {
-				int sent = T_SSL_write(sockfd, buffer, read);
-				free(buffer);
-				if (sent != read) {
-					return 1;
-				}
-			}
-		}
-	}	
-	return 0;
 }
