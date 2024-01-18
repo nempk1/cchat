@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <time.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -143,6 +144,11 @@ int main(int argc, char *argv[])
 	squeue_init(&q_raw_msg);
 	squeue_init(&q_proc_msg);
 
+	sem_t parsed_messages;
+	sem_init(&parsed_messages, 0, 0);
+	sem_t raw_messages;
+	sem_init(&raw_messages, 0, 0);
+
 
 	job_args_t *job_args = malloc(sizeof(job_args_t));	
 	if(job_args == NULL) 
@@ -152,7 +158,10 @@ int main(int argc, char *argv[])
 	}
 	
 	job_args->q_raw_msg = q_raw_msg;
+	job_args->q_raw_sem = &raw_messages;
+	
 	job_args->q_proc_msg = q_proc_msg;
+	job_args->q_proc_sem = &parsed_messages;
 	job_args->sockfd = sockfdorg;
 	job_args->sockjava = sockfd_java;
 	job_args->cfg = cfg;
@@ -215,6 +224,9 @@ int main(int argc, char *argv[])
 
 	squeue_destroy(&q_raw_msg);
 	squeue_destroy(&q_proc_msg);
+
+	sem_destroy(&raw_messages);
+	sem_destroy(&parsed_messages);
 
 
 	exit(1);

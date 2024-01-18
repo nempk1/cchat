@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "queue.h"
 #include "parse_msg.h"

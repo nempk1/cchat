@@ -9,5 +9,6 @@ int cmd_interp(struct message *userinfo, struct T_SSL* SOCKFD, int sockjava)
 		respond_message(SOCKFD, userinfo, "Fake music command working");
 		return 0;	
 	}
+	return 0;
 }
 

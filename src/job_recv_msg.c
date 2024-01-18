@@ -13,7 +13,7 @@ void *_job_recv_f (void *args)
 
 		int tmp = T_SSL_read(arg->sockfd, msg, 
 				IRC_MAX_TAGS_MESSAGE - 1);
-		
+		/* Write PONG as response to PING. */
 		if(tmp == 21) {
 			T_SSL_write(arg->sockfd, PING_RESPONSE, strlen(PING_RESPONSE));
 			free(msg);
@@ -29,6 +29,8 @@ void *_job_recv_f (void *args)
 			exit(0);
 		} else {
 			squeue_enqueue_data(arg->q_raw_msg, msg);
+			/* Post raw msg semaphore */
+			sem_post(arg->q_raw_sem);
 			
 		}
 	}

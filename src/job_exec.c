@@ -22,7 +22,8 @@ void *print_exec_thread(void *arg) {
 			message_destroy(&proc_msg);
 			continue;
 		}
-		sleep(1);
+		/* Wait on proc msg semaphore */
+		sem_wait(args->q_proc_sem);
 	}
 }
 
