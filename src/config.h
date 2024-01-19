@@ -12,9 +12,10 @@
 #define OAUTH_PREFIX "PASS oauth:"
 #define NICK_PREFIX "NICK "
 #define JOIN_PREFIX "JOIN #"
-#define ENABLE_ALL "CAP REQ :twitch.tv/tags commands\r\n"
-#define ENABLE_TAGS "CAP REQ :twitch.tv/tags\r\n"
-#define ENABLE_COMMANDS "CAP REQ :twitch.tv/commands\r\n"
+#define ENABLE_ALL "CAP REQ :twitch.tv/commands twitch.tv/tags twitch.tv/membership\n"
+#define ENABLE_TAGS "CAP REQ :twitch.tv/tags\n"
+#define ENABLE_COMMANDS "CAP REQ :twitch.tv/commands\n"
+#define ENABLE_MEMBERSHIP "CAP REQ :twitch.tv/membership\n"
 
 
 struct parsed_cfg {

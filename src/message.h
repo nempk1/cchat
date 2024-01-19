@@ -8,6 +8,8 @@
 #define TAG_LIST_SIZE 		25
 
 #include "config.h"
+#include "connect_socket.h"
+
 
 enum COMMAND { CLEARCHAT ,
        	CLEARMSG,
@@ -44,6 +46,7 @@ struct message {
    	enum COMMAND 	 command;	
 	int 		 is_command;
 	struct parsed_cfg *cfg;
+	struct T_SSL 	*conn;
 };
 
 #endif

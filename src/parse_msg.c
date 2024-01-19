@@ -161,6 +161,8 @@ struct message* message_create(char *np_msg)
 	new->command = 0;	
 	new->is_command = 0;
 
+	new->conn = NULL;
+
 	return new;
 }
 struct message*

@@ -25,6 +25,7 @@ void *_job_proc_recv(void *arg)
 			message_destroy(&result);
 		} else {
 			result->cfg = args->cfg;
+			result->conn = args->sockfd;
 			squeue_enqueue_data(args->q_proc_msg, result);
 			/* Post semaphore for proc msg queue */
 			sem_post(args->q_proc_sem);

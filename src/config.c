@@ -8,6 +8,7 @@ config_send(struct T_SSL *conn, const char *filepath)
 	const char *oauth, *oauth_name, *channel_chat;
 	int enable_tag = true;
 	int enable_command = true;
+	int enable_membership = true;
 
 	config_init(&cfg);
 
@@ -82,18 +83,12 @@ config_send(struct T_SSL *conn, const char *filepath)
 	for(int i = 0; i < 3; i++)
 		if(T_SSL_write(conn, result[i], strlen(result[i])) <= 0) 
 			return -1;
-	if(enable_tag == true) {
+	if(enable_command && enable_membership && enable_tag) {
 		char buffer[100];
-		T_SSL_write(conn, ENABLE_TAGS, sizeof(ENABLE_ALL)-1);
-		int i = 0;
-		i = T_SSL_read(conn, buffer, sizeof(buffer));
-		buffer[i] = '\0';
-		printf("%s\n", buffer);
-		
+		int result = 0;
+		T_SSL_write(conn, ENABLE_ALL, sizeof(ENABLE_ALL)-1);
+		result = T_SSL_read(conn,buffer, sizeof(buffer));
 	}
-
-	if(enable_command == true)
-		T_SSL_write(conn, ENABLE_COMMANDS, sizeof(ENABLE_COMMANDS)-1);
 	
 	config_destroy(&cfg);
 	for(int i = 0; i< 3; i++)

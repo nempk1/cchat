@@ -17,7 +17,7 @@ void *print_exec_thread(void *arg) {
 					proc_msg->username, proc_msg->msg);
 			} 
 			if (proc_msg->is_command) {
-				cmd_interp(proc_msg, args->sockfd, args->sockjava);
+				cmd_interp(proc_msg);
 			}
 			message_destroy(&proc_msg);
 			continue;
