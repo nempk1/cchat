@@ -12,13 +12,26 @@ void *print_exec_thread(void *arg) {
 	while(1) {
 		proc_msg = squeue_dequeue_data(procqueue);
 		if(proc_msg != NULL) {
-			if (proc_msg->command == PRIVMSG) {
-				printf("%s: %s\n",
-					proc_msg->username, proc_msg->msg);
+			switch(proc_msg->command) {
+				case PRIVMSG:
+					if (proc_msg->is_command) {
+						cmd_interp(proc_msg);
+					}
+					printf("%s: %s\n",
+						proc_msg->username,
+					       	proc_msg->msg);
+					break;
+				case JOIN:
+					printf("\033[1;32mUSER:%s JOINED\033[1;0m\n",
+						       	proc_msg->username);
+					break;
+				case PART:
+					printf("\033[1;31mUSER:%s LEFT\033[1;0m\n",
+							proc_msg->username);
+					break;
+				default:
+					break;
 			} 
-			if (proc_msg->is_command) {
-				cmd_interp(proc_msg);
-			}
 			message_destroy(&proc_msg);
 			continue;
 		}
