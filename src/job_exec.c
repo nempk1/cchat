@@ -17,9 +17,25 @@ void *print_exec_thread(void *arg) {
 					if (proc_msg->is_command) {
 						cmd_interp(proc_msg);
 					}
-					printf("%s: %s\n",
+					if (proc_msg->rgb_8bit) {
+						if(proc_msg->mod) {
+							printf("\033[1;32m%s\033[1;0m \033[38;2;%u;%u;%um%s\033[1;0m:%s\n",
+							"\U000024c2",
+							proc_msg->rgb_8bit[0],
+							proc_msg->rgb_8bit[1],
+							proc_msg->rgb_8bit[2],
+							proc_msg->username,
+						       	proc_msg->msg);							
+						} else {
+
+						printf("\033[38;2;%u;%u;%um%s\033[1;0m:%s\n",
+						proc_msg->rgb_8bit[0],
+						proc_msg->rgb_8bit[1],
+						proc_msg->rgb_8bit[2],
 						proc_msg->username,
 					       	proc_msg->msg);
+						}
+					}
 					break;
 				case JOIN:
 					printf("\033[1;32mUSER:%s JOINED\033[1;0m\n",

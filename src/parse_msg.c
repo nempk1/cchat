@@ -157,9 +157,11 @@ struct message* message_create(char *np_msg)
 	new->raw_msg = np_msg;
 	new->msg = NULL;
 	new->username = NULL;
+	new->rgb_8bit = NULL;
 
 	new->command = 0;	
 	new->is_command = 0;
+	new->mod = 0;
 
 	new->conn = NULL;
 
@@ -196,6 +198,7 @@ void message_destroy(struct message** msg)
 {
 	free((*msg)->raw_msg);
 	free((*msg)->tag_list);
+	free((*msg)->rgb_8bit);
 	free(*msg);
 	(*msg) = NULL;
 
@@ -239,3 +242,14 @@ unsigned long _hash(unsigned char *str)
 
 	return hash;
 }
+
+// copied from https://gist.github.com/xsleonard/7341172
+// this is slight modified
+unsigned char* hexstr_to_char(const char* hexstr)
+{
+    unsigned char* chrs = (unsigned char*)malloc(3 * sizeof(*chrs));
+    for (size_t i=0, j=0; j<6; i+=2, j++)
+        chrs[j] = (hexstr[i] % 32 + 9) % 25 * 16 + (hexstr[i+1] % 32 + 9) % 25;
+    return chrs;
+}
+

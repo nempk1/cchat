@@ -39,14 +39,16 @@ struct tag {
 };
 
 struct message {
+	struct parsed_cfg *cfg;
 	struct tag  	*tag_list;
+	struct T_SSL 	*conn;
 	char 	 	*raw_msg;
 	char 	 	*msg;	
 	char 	 	*username;	
+	unsigned char	*rgb_8bit;
    	enum COMMAND 	 command;	
 	int 		 is_command;
-	struct parsed_cfg *cfg;
-	struct T_SSL 	*conn;
+	int 		 mod;
 };
 
 #endif

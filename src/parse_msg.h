@@ -38,4 +38,5 @@ extern char *_ltrim(char *);
 extern char *_rtrim(char *);
 extern char *_trim(char *);
 
+extern unsigned char* hexstr_to_char(const char* );
 #endif
