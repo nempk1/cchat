@@ -6,6 +6,7 @@
 static struct command_str cmd_list[] = 
 {
 	{"!teste", test_command},
+	{"!mem_usage", memory_usage},
 	{0, 0}
 };
 
