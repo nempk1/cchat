@@ -31,8 +31,6 @@ else ifeq ($(shell $(CC) -v 2>&1 | grep -c "clang version"),1)
   CFLAGS += $(CLANG_FLAGS)  
 endif
 
-
-
 LDFLAGS ?= $(addprefix -L,$(LIB_DIR)) -g -lpthread -lssl -lcrypto -lconfig \
 	   -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,separate-code
 
