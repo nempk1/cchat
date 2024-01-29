@@ -23,16 +23,19 @@ GCC_FLAGS = -fanalyzer -mshstk
 CLANG_FLAGS = -fstack-clash-protection -Wthread-safety -Wthread-safety-beta \
 	      -Widiomatic-parentheses -Wpointer-arith -Wunreachable-code-aggressive \
 	      -Wconditional-uninitialized  -Warray-bounds-pointer-arithmetic 	\
-	      -Wshift-sign-overflow -Wcomma  -fsanitize-minimal-runtime
+	      -Wshift-sign-overflow -Wcomma  -fsanitize-minimal-runtime 
+
+LDFLAGS ?= $(addprefix -L,$(LIB_DIR)) -lpthread -lssl -lcrypto -lconfig \
+	   -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,separate-code\
 
 ifeq ($(shell $(CC) -v 2>&1 | grep -c "gcc version"),1)
   CFLAGS += $(GCC_FLAGS)
 else ifeq ($(shell $(CC) -v 2>&1 | grep -c "clang version"),1)
   CFLAGS += $(CLANG_FLAGS)  
+  LDFLAGS += -Wl,--strip-all 
 endif
 
-LDFLAGS ?= $(addprefix -L,$(LIB_DIR)) -g -lpthread -lssl -lcrypto -lconfig \
-	   -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,separate-code
+
 
 $(BIN_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
