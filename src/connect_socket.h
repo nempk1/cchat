@@ -27,12 +27,16 @@ struct T_SSL {
 extern int
 T_SSL_init(struct T_SSL**);
 
+extern void
+T_SSL_free(struct T_SSL**);
+
 extern struct T_SSL*
 T_SSL_connect(char *, char *);
 
 /***************************************
  * wrapper for SSL_write() function using 
- * pthreads lock to avoid problems.
+ * pthreads lock and cond 
+ * to avoid problems.
  *
  ***************************************/
 
@@ -41,7 +45,8 @@ T_SSL_write(struct T_SSL *, const void *, int);
 
 /***************************************
  * wrapper for SSL_read() function using 
- * pthreads lock to avoid problems.
+ * pthreads lock and cond 
+ * to avoid problems.
  *
  ***************************************/
 
@@ -63,8 +68,6 @@ T_SSL_read(struct T_SSL *, void *, int);
  ***************************************/
 
 extern int connect_socket(char *ip, char *port);
-
-
 
 /***************************************
  * This function just envolves the orig 

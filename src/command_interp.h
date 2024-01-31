@@ -6,11 +6,10 @@
 #include <pthread.h>
 
 #include "queue.h"
-#include "parse_msg.h"
+#include "irc_parse.h"
 #include "connect_socket.h"
-#include "parse_msg.h"
 #include "twitch_util.h"
 
-extern int cmd_interp(struct message*);
+extern int cmd_interp(struct twitch_msg*);
 
 #endif

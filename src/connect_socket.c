@@ -1,4 +1,7 @@
 #include "connect_socket.h"
+#include <openssl/ossl_typ.h>
+#include <openssl/ssl.h>
+#include <pthread.h>
 
 static struct timeval defaut_timeout = {.tv_sec = 0, .tv_usec = 250000};
 
@@ -15,6 +18,19 @@ int T_SSL_init(struct T_SSL **tssl)
 		return -1;
 
 	return 0;
+}
+
+void T_SSL_free(struct T_SSL **tssl)
+{
+	pthread_mutex_destroy(&(*tssl)->mutex);
+	SSL_CTX *ctx= SSL_get_SSL_CTX((*tssl)->ssl);
+	int sockfd = SSL_get_fd((*tssl)->ssl);
+	SSL_shutdown((*tssl)->ssl);
+	SSL_CTX_free(ctx);
+	SSL_free((*tssl)->ssl);
+	close(sockfd);
+	free((*tssl));
+	(*tssl) = NULL;
 }
 
 /* Return connect socket fd */

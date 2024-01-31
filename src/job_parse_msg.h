@@ -7,7 +7,7 @@
 #include <semaphore.h>
 
 #include "queue.h"
-#include "parse_msg.h"
+#include "irc_parse.h"
 
 extern void *_job_proc_recv(void *);
 #endif

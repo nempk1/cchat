@@ -1,8 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
+#define _GNU_SOURCE
 
 #include <sys/resource.h>
-#include "parse_msg.h"
 #include "connect_socket.h"
 #include "message.h"
 #include "twitch_util.h"
@@ -18,20 +18,20 @@ struct command_hash {
 };
 
 /* Creating custom command bellow */
-extern void *
+void *
 test_command(void *data)
 {
-	struct message *msg = data;
+	struct twitch_msg *msg = data;
 
 	respond_message(msg->conn, msg, "test command worked");
 	return NULL;
 }
 
-extern void *
+void *
 memory_usage(void *data)
 {
 	char *response = NULL;
-	struct message *msg = data;
+	struct twitch_msg *msg = data;
 	struct rusage resource;
 	getrusage(RUSAGE_SELF, &resource);
 	asprintf(&response, "Memory Usage: %ld kB", resource.ru_maxrss);
@@ -40,6 +40,4 @@ memory_usage(void *data)
 	return NULL;
 
 }
-
-
 #endif

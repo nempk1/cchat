@@ -1,54 +1,61 @@
 #include "job_exec.h"
-#include "parse_msg.h"
+#include "irc_parse.h"
+#include "message.h"
+
+#include "assert.h"
+			/* Unicode emoji in the midle */
+#define MOD_TAG  	"\033[1;32m\U000024c2\033[1;0m "
+
+#define UNAME_RGB 	"\033[38;2;%u;%u;%um%s\033[1;0m"
+
+
 
 // Thread responsible for showing messages on and exec the cmd's.
-void *print_exec_thread(void *arg) {
-	
+void *
+job_exec_thread(void *arg) 
+{
 	job_args_t *args = (job_args_t*) arg;
 	squeue *procqueue = args->q_proc_msg;
 
-	struct message *proc_msg = NULL;
-
 	while(1) {
-		proc_msg = squeue_dequeue_data(procqueue);
-		if(proc_msg != NULL) {
-			switch(proc_msg->command) {
+		struct twitch_msg *msg	= squeue_dequeue_data(procqueue);
+		if(msg != NULL) {
+			switch(msg->cmd) {
 				case PRIVMSG:
-					if (proc_msg->is_command) {
-						cmd_interp(proc_msg);
+					if (msg->is_command) {
+						cmd_interp(msg);
 					}
-					if (proc_msg->rgb_8bit) {
-						if(proc_msg->mod) {
-							printf("\033[1;32m%s\033[1;0m \033[38;2;%u;%u;%um%s\033[1;0m:%s\n",
-							"\U000024c2",
-							proc_msg->rgb_8bit[0],
-							proc_msg->rgb_8bit[1],
-							proc_msg->rgb_8bit[2],
-							proc_msg->username,
-						       	proc_msg->msg);							
-						} else {
+					if(msg->mod) {
+						printf(MOD_TAG UNAME_RGB":%s\n",
+								msg->rgb[0],
+								msg->rgb[1],
+								msg->rgb[2],
+								msg->username,
+								msg->irc->param.last);
+						break;
+					} 
+					printf(UNAME_RGB":%s\n",
+							msg->rgb[0],
+							msg->rgb[1],
+							msg->rgb[2],
+							msg->username,
+							msg->irc->param.last);
 
-						printf("\033[38;2;%u;%u;%um%s\033[1;0m:%s\n",
-						proc_msg->rgb_8bit[0],
-						proc_msg->rgb_8bit[1],
-						proc_msg->rgb_8bit[2],
-						proc_msg->username,
-					       	proc_msg->msg);
-						}
-					}
 					break;
 				case JOIN:
+					assert(msg->irc != NULL);
 					printf("\033[1;32mUSER:%s JOINED\033[1;0m\n",
-						       	proc_msg->username);
+							msg->irc->source.name);
 					break;
 				case PART:
+					assert(msg->irc != NULL);
 					printf("\033[1;31mUSER:%s LEFT\033[1;0m\n",
-							proc_msg->username);
+							msg->irc->source.name);
 					break;
 				default:
 					break;
 			} 
-			message_destroy(&proc_msg);
+			t_msg_free(&msg);
 			continue;
 		}
 		/* Wait on proc msg semaphore */

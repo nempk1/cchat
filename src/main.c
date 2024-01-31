@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -31,31 +33,33 @@ int main(int argc, char *argv[])
 	char *spotify_port 	= NULL;
 	char *spotify_addr 	= NULL;
 	char *suboptvalue 	= NULL;
+	char *channel_name 	= NULL;
 
-	struct parsed_cfg *cfg 	= NULL;;
+	struct p_cfg *cfg 	= NULL;
 
 	enum {
 		PORT_OPT,
-		ADDR_OPT		
+		ADDR_OPT,
 	};
 
-	char *const token[] = {
+	char *token[] = {
 		[PORT_OPT] = "port",
 		[ADDR_OPT] = "address",
 		NULL	
 	};
 
 	struct option longopts[] = {
-	{ "config-file",	required_argument,	NULL,	'c' },	
-	{ "irc",		required_argument,	NULL,   'i' },
-	{ "irc-port",		required_argument, 	NULL,	'p' },
-	{ "enable-spotify",	required_argument,	&enable_spotify, 1},
-	{ NULL,			0,			NULL,		0}
+		{ "config-file",	required_argument,	NULL,	'c' },	
+		{ "irc",		required_argument,	NULL,   'i' },
+		{ "irc-port",		required_argument, 	NULL,	'p' },
+		{ "channel", 		required_argument, 	NULL, 	'n' },
+		{ "enable-spotify",	required_argument,	&enable_spotify, 1},
+		{ NULL,			0,			NULL,		0}
 	};
 
 
 	int ch = 0;
-	while((ch =getopt_long(argc,argv, "c:i:p:", longopts, NULL)) != -1)
+	while((ch =getopt_long(argc,argv, "nc:i:p:", longopts, NULL)) != -1)
 	{
 		switch(ch) {
 			case 'c':
@@ -67,34 +71,35 @@ int main(int argc, char *argv[])
 			case 'p':
 				irc_port = strdup(optarg);
 				break;
+			case 'n':
+				channel_name = strdup(optarg);
+				break;
 			case '?': 
 				exit(EXIT_FAILURE);
-				break;
 			case 0:
 				if(enable_spotify) {
-				suboptions = optarg;
-				while(*suboptions) {
-					switch(getsubopt(&suboptions, token, &suboptvalue)) {
-						case PORT_OPT:
-							spotify_port = strdup(suboptvalue);
-							break;
-						case ADDR_OPT:
-							spotify_addr = strdup(suboptvalue);
-							break;
-						default :
-							break;
-					}
+					suboptions = optarg;
+					while(*suboptions) {
+						switch(getsubopt(&suboptions, token, &suboptvalue)) {
+							case PORT_OPT:
+								spotify_port = strdup(suboptvalue);
+								break;
+							case ADDR_OPT:
+								spotify_addr = strdup(suboptvalue);
+								break;
+							default :
+								break;
+						}
 
+					}
 				}
-				}
+				break;
 			default:
 				break;
 				
 		}
 	
 	}
-
-	char buffer[4096] = {'\0'};
 
 	struct T_SSL* sockfdorg = T_SSL_connect(irc_address, irc_port);
 	
@@ -113,7 +118,12 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);	
 	}
 
-	if(config_send(sockfdorg, config_file)) {
+	if(channel_name) {
+		free(cfg->channel);
+		cfg->channel = channel_name;
+	}
+
+	if(config_send(sockfdorg, config_file, channel_name)) {
 		printf("Error sending cfg\n");
 		exit(EXIT_FAILURE);
 	}
@@ -121,6 +131,7 @@ int main(int argc, char *argv[])
 	free(config_file);
 
 	int sockfd_java = -1;
+
 	if(enable_spotify) {
 		if(enable_spotify != 0 && (spotify_addr == NULL || spotify_port == NULL)) {
 			fprintf(stderr, "Erro with values of address or port!!\n");
@@ -171,12 +182,12 @@ int main(int argc, char *argv[])
 	pthread_t proc_msg_thread;
 
 	
-	if(pthread_create(&recv_thread, NULL, _job_recv_f, (void *)job_args)) {
+	if(pthread_create(&recv_thread, NULL, job_recv_msg, (void *)job_args)) {
 		fprintf(stderr, "Error creating recv thread\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if(pthread_create(&cmd_thread, NULL, print_exec_thread, (void *)job_args)) {
+	if(pthread_create(&cmd_thread, NULL, job_exec_thread, (void *)job_args)) {
 		fprintf(stderr, "Error creating print thread\n");
 		exit(EXIT_FAILURE);
 	}
@@ -199,18 +210,19 @@ int main(int argc, char *argv[])
 			perror("Error on read");
 			exit(0);
 		} else {
-			asprintf(&sent, "PRIVMSG #%s :%s\n", cfg->channel,str);
+			len = num;
+			if(!strcmp("exit\n", str)) {
+				break; /* exit loop and go to exit */
+			}
+			asprintf(&sent, "PRIVMSG #%s :%s\r\n", cfg->channel,str);
 			send_bytes = T_SSL_write(sockfdorg, sent, strlen(sent));
 			if (send_bytes == -1) {
 				perror("Error on send");
 				exit(EXIT_FAILURE);	
 			}
-			free(str);
 			free(sent);
-			str = NULL; len = 0;
 		}
 	}
-
 	pthread_cancel(cmd_thread);
 	pthread_cancel(recv_thread);
 	pthread_cancel(proc_msg_thread);
@@ -227,7 +239,6 @@ int main(int argc, char *argv[])
 
 	sem_destroy(&raw_messages);
 	sem_destroy(&parsed_messages);
-
-
-	exit(1);
+	T_SSL_free(&sockfdorg);
+	exit(0);
 }

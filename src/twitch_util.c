@@ -1,17 +1,19 @@
 #include "twitch_util.h"
+#include "message.h"
 
 int respond_message(struct T_SSL *conn,
-			struct message *msg,
+			struct twitch_msg *msg,
 			const char *response)
 {
 	int ret = 0;
-	char *msg_id = search_tag_name("id", msg->tag_list);
+	struct twitch_msg *l_msg = msg;
+	char *msg_id = search_tag_name("id", &l_msg->irc->tlist);
 	if(!msg_id) {
 		return -1;
 	}
 
 	char *result_str = NULL;	
-	ret = asprintf(&result_str, "@reply-parent-msg-id=%s PRIVMSG #%s :%s\n",
+	ret = asprintf(&result_str, "@reply-parent-msg-id=%s PRIVMSG #%s :%s \r\n",
 		       	msg_id, msg->cfg->channel, response);
 	if(ret == -1) {
 		return -1;

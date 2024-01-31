@@ -1,9 +1,10 @@
 #ifndef _CCHAT_CONFIG_
 #define _CCHAT_CONFIG_
 
+#define _GNU_SOURCE
+
 #include <stdbool.h>
 #include <stdio.h>
-
 #include <libconfig.h>
 
 #include "connect_socket.h"
@@ -18,7 +19,7 @@
 #define ENABLE_MEMBERSHIP "CAP REQ :twitch.tv/membership\n"
 
 
-struct parsed_cfg {
+struct p_cfg {
 	char *channel;
 	char *oauth;
 	char *oauth_nick;
@@ -27,8 +28,8 @@ struct parsed_cfg {
 };
 
 extern int
-config_send(struct T_SSL *, const char *);  
+config_send(struct T_SSL *, const char *, const char *);  
 
-extern struct parsed_cfg *
+extern struct p_cfg *
 config_parse_file(const char *);
 #endif

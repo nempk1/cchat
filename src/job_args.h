@@ -24,7 +24,7 @@ typedef struct {
 	squeue 	*q_jobs;
 
 	struct T_SSL* sockfd; // reference of connected socket.	
-	struct parsed_cfg* cfg;
+	struct p_cfg * cfg;
 	int sockjava; // socket used for java spotify commands.
 } job_args_t;
 

@@ -6,8 +6,8 @@
 #include "queue.h"
 #include "message.h"
 #include "job_args.h"
-#include "basic.h"
 #include "connect_socket.h"
+#include "irc_parse.h"
 
 /*****************************************
  * This function is the thread responsible
@@ -19,6 +19,6 @@
  *
  ****************************************/
 
-extern void *_job_recv_f(void * args);
+extern void *job_recv_msg(void * args);
 
 #endif

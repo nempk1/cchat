@@ -2,7 +2,7 @@
 #include "connect_socket.h"
 
 int
-config_send(struct T_SSL *conn, const char *filepath)
+config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 {
 	config_t cfg;
 	const char *oauth, *oauth_name, *channel_chat;
@@ -75,19 +75,22 @@ config_send(struct T_SSL *conn, const char *filepath)
 	if(result[1] == NULL)
 		return -1;
 
+	if(channel_name)
+		channel_chat = channel_name;
+
 	asprintf(&result[2], "%s%s\r\n", JOIN_PREFIX, channel_chat);
 	if(result[2] == NULL)
 		return -1;
 
+	
 	
 	for(int i = 0; i < 3; i++)
 		if(T_SSL_write(conn, result[i], strlen(result[i])) <= 0) 
 			return -1;
 	if(enable_command && enable_membership && enable_tag) {
 		char buffer[100];
-		int result = 0;
 		T_SSL_write(conn, ENABLE_ALL, sizeof(ENABLE_ALL)-1);
-		result = T_SSL_read(conn,buffer, sizeof(buffer));
+		T_SSL_read(conn,buffer, sizeof(buffer));
 	}
 	
 	config_destroy(&cfg);
@@ -97,7 +100,7 @@ config_send(struct T_SSL *conn, const char *filepath)
 	return 0;
 }
 
-struct parsed_cfg *
+struct p_cfg *
 config_parse_file(const char *filepath)
 {
 	config_t cfg;
@@ -166,7 +169,12 @@ config_parse_file(const char *filepath)
 	    	return NULL;
 	} 
 
-	struct parsed_cfg *result = malloc(sizeof(*result));
+	struct p_cfg *result = malloc(sizeof(*result));
+	if(!result) {
+		config_destroy(&cfg);
+		fputs("Could not allocate memory for p_cfg\n",stderr);
+	    	exit(EXIT_FAILURE);
+	}
 
 	result->oauth_nick = strdup(oauth_name);
 	result->channel = strdup(channel_chat);

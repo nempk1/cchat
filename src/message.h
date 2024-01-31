@@ -33,22 +33,20 @@ struct cmd_hash {
 	unsigned long hash_value;	
 };
 
-struct tag {
-	char 	*name;
-	char 	*value;
-};
-
-struct message {
-	struct parsed_cfg *cfg;
-	struct tag  	*tag_list;
+struct twitch_msg {
+	struct irc_msg 	*irc;
 	struct T_SSL 	*conn;
-	char 	 	*raw_msg;
-	char 	 	*msg;	
-	char 	 	*username;	
-	unsigned char	*rgb_8bit;
-   	enum COMMAND 	 command;	
+	struct p_cfg 	*cfg;
+	char 		*username;
+	unsigned char 	*rgb;
+	enum COMMAND     cmd;
 	int 		 is_command;
 	int 		 mod;
 };
 
+extern struct twitch_msg *
+t_msg_alloc();
+
+extern void
+t_msg_free(struct twitch_msg **);
 #endif
