@@ -15,7 +15,7 @@ void *
 job_exec_thread(void *arg) 
 {
 	job_args_t *args = (job_args_t*) arg;
-	squeue *procqueue = args->q_proc_msg;
+	struct squeue *procqueue = args->q_proc_msg;
 
 	while(1) {
 		struct twitch_msg *msg	= squeue_dequeue_data(procqueue);

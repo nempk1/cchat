@@ -10,18 +10,18 @@ typedef struct {
 	// Queue used to store
 	// msg's originated from
 	// socket.
-	squeue 	*q_raw_msg;
+	struct squeue 	*q_raw_msg;
 	sem_t 	*q_raw_sem;
 
 	// Queue used to store
 	// msg's processed from
 	// the raw queue.
-	squeue 	*q_proc_msg;
+	struct squeue 	*q_proc_msg;
 	sem_t  	*q_proc_sem;
 
 	// Queue used to pass
 	// jobs between threads.
-	squeue 	*q_jobs;
+	struct squeue 	*q_jobs;
 
 	struct T_SSL* sockfd; // reference of connected socket.	
 	struct p_cfg * cfg;

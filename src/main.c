@@ -148,8 +148,8 @@ int main(int argc, char *argv[])
 	free(spotify_addr);
 	free(spotify_port);
 
-	squeue *q_raw_msg = NULL;
-	squeue *q_proc_msg = NULL;
+	struct squeue *q_raw_msg = NULL;
+	struct squeue *q_proc_msg = NULL;
 
 	// Create queue's needed
 	squeue_init(&q_raw_msg);

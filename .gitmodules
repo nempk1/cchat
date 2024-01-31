@@ -1,3 +1,6 @@
 [submodule "src/irc_parser"]
 	path = src/irc_parser
 	url = https://github.com/nempk1/irc_parser
+[submodule "src/queue"]
+	path = src/queue
+	url = https://github.com/nempk1/queue
