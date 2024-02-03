@@ -1,11 +1,11 @@
+#include <string.h>
 #include "commands.h"
 #include "command_interp.h"
-
 #include "irc_parse.h"
 #include "message.h"
-#include <string.h>
+#include "strlcat.h"
 
-static void*show_commands(void*);
+void*show_commands(void*);
 
 static struct command_str cmd_list[] = 
 {
@@ -15,28 +15,33 @@ static struct command_str cmd_list[] =
  *  	get the (!cmd !cmd_alias) response
  *  	from show_commands
  */
-	{"!test", test_command, 0},
- 	{"!test_alias", test_command, 0},
 	{"!mem_usage", memory_usage, 0},
 	{"!commands", show_commands, 0},
 	{NULL, NULL, 0}
 };
 
-static void *show_commands(void *data)
+void *show_commands(void *data)
 {
 
 	struct twitch_msg *msg = data;
 	const struct command_str *list = cmd_list;
-	char buffer[1024];
+	
+	#define SIZE_B 512
+	char buffer[SIZE_B];
+	size_t end;
+	buffer[0] = '\0';
 	while(list->cmd_str != NULL) {
 		if((list + 1)->fun_ptr == list->fun_ptr) {
-			strcat(buffer, "( ");
-			strcat(strcat(buffer, list->cmd_str), " ");
-			list++;
-			strcat(strcat(buffer, list->cmd_str), " ");
-			strcat(buffer, ") ");
+			strlcat(buffer, "(", SIZE_B);
+			strlcat(buffer+ strlcat(buffer, list->cmd_str, SIZE_B), " = ", SIZE_B);
+			do {
+				list++;
+				strlcat(buffer + (end = strlcat(buffer, list->cmd_str, SIZE_B)) , " = ", SIZE_B);
+			} while ((list + 1)->fun_ptr == list->fun_ptr);
+			buffer[end] = '\0';
+			strlcat(buffer, ") ", SIZE_B);
 		}else 
-			strcat(strcat(buffer, list->cmd_str), " ");
+			strlcat(buffer + strlcat(buffer, list->cmd_str, SIZE_B), " ", SIZE_B);
 
 		list++;
 	}
