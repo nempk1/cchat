@@ -22,9 +22,13 @@ job_exec_thread(void *arg)
 		if(msg != NULL) {
 			switch(msg->cmd) {
 				case PRIVMSG:
+					#ifndef NO_CMD
 					if (msg->is_command) {
 						cmd_interp(msg);
 					}
+					#endif
+					
+					#ifndef NO_MSG_PRINT
 					if(msg->mod) {
 						printf(MOD_TAG UNAME_RGB":%s\n",
 								msg->rgb[0],
@@ -40,15 +44,13 @@ job_exec_thread(void *arg)
 							msg->rgb[2],
 							msg->username,
 							msg->irc->param.last);
-
+					#endif
 					break;
 				case JOIN:
-					assert(msg->irc != NULL);
 					printf("\033[1;32mUSER:%s JOINED\033[1;0m\n",
 							msg->irc->source.name);
 					break;
 				case PART:
-					assert(msg->irc != NULL);
 					printf("\033[1;31mUSER:%s LEFT\033[1;0m\n",
 							msg->irc->source.name);
 					break;
