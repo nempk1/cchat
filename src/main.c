@@ -31,11 +31,6 @@ int main(int argc, char *argv[])
 
 	struct p_cfg *cfg 	= NULL;
 
-	enum {
-		PORT_OPT,
-		ADDR_OPT,
-	};
-
 	struct option longopts[] = {
 		{ "config-file",	required_argument,	NULL,	'c' },	
 		{ "irc",		required_argument,	NULL,   'i' },
@@ -43,7 +38,6 @@ int main(int argc, char *argv[])
 		{ "channel", 		required_argument, 	NULL, 	'n' },
 		{ NULL,			0,			NULL,		0}
 	};
-
 
 	int ch = 0;
 	while((ch =getopt_long(argc,argv, "nc:i:p:", longopts, NULL)) != -1)
@@ -168,6 +162,7 @@ int main(int argc, char *argv[])
 			if(!strcmp("exit\n", str)) {
 				break; /* exit loop and go to exit */
 			}
+
 			asprintf(&sent, "PRIVMSG #%s :%s\r\n", cfg->channel,str);
 			send_bytes = T_SSL_write(sockfdorg, sent, strlen(sent));
 			if (send_bytes == -1) {
@@ -194,5 +189,6 @@ int main(int argc, char *argv[])
 	sem_destroy(&raw_messages);
 	sem_destroy(&parsed_messages);
 	T_SSL_free(&sockfdorg);
+
 	exit(0);
 }
