@@ -149,10 +149,11 @@ int main(int argc, char *argv[])
 	// Read data from stdio and
 	// send to socket.
 	char * str = NULL;
-	char * sent = NULL;
+	char sent[1024]; 
 	size_t len = 0;
 	while (1) {
 		int send_bytes = 0;
+		int result = 0;
 		int num = getline(&str, &len, stdin);
 		if (num == -1) {
 			perror("Error on read");
@@ -163,13 +164,12 @@ int main(int argc, char *argv[])
 				break; /* exit loop and go to exit */
 			}
 
-			asprintf(&sent, "PRIVMSG #%s :%s\r\n", cfg->channel,str);
-			send_bytes = T_SSL_write(sockfdorg, sent, strlen(sent));
+			result = snprintf(sent,1024, "PRIVMSG #%s :%s\r\n", cfg->channel,str);
+			send_bytes = T_SSL_write(sockfdorg, sent, result);
 			if (send_bytes == -1) {
 				perror("Error on send");
 				exit(EXIT_FAILURE);	
 			}
-			free(sent);
 		}
 	}
 	pthread_cancel(cmd_thread);
