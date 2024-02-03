@@ -24,15 +24,9 @@ int send_cfg(struct T_SSL* sockfd);
 int main(int argc, char *argv[])
 {
 
-	int enable_spotify = 0;
-
-	char *suboptions	= NULL;
 	char *irc_address 	= NULL;
 	char *irc_port 		= NULL;
 	char *config_file 	= NULL;
-	char *spotify_port 	= NULL;
-	char *spotify_addr 	= NULL;
-	char *suboptvalue 	= NULL;
 	char *channel_name 	= NULL;
 
 	struct p_cfg *cfg 	= NULL;
@@ -42,18 +36,11 @@ int main(int argc, char *argv[])
 		ADDR_OPT,
 	};
 
-	char *token[] = {
-		[PORT_OPT] = "port",
-		[ADDR_OPT] = "address",
-		NULL	
-	};
-
 	struct option longopts[] = {
 		{ "config-file",	required_argument,	NULL,	'c' },	
 		{ "irc",		required_argument,	NULL,   'i' },
 		{ "irc-port",		required_argument, 	NULL,	'p' },
 		{ "channel", 		required_argument, 	NULL, 	'n' },
-		{ "enable-spotify",	required_argument,	&enable_spotify, 1},
 		{ NULL,			0,			NULL,		0}
 	};
 
@@ -76,24 +63,6 @@ int main(int argc, char *argv[])
 				break;
 			case '?': 
 				exit(EXIT_FAILURE);
-			case 0:
-				if(enable_spotify) {
-					suboptions = optarg;
-					while(*suboptions) {
-						switch(getsubopt(&suboptions, token, &suboptvalue)) {
-							case PORT_OPT:
-								spotify_port = strdup(suboptvalue);
-								break;
-							case ADDR_OPT:
-								spotify_addr = strdup(suboptvalue);
-								break;
-							default :
-								break;
-						}
-
-					}
-				}
-				break;
 			default:
 				break;
 				
@@ -132,21 +101,6 @@ int main(int argc, char *argv[])
 
 	int sockfd_java = -1;
 
-	if(enable_spotify) {
-		if(enable_spotify != 0 && (spotify_addr == NULL || spotify_port == NULL)) {
-			fprintf(stderr, "Erro with values of address or port!!\n");
-		} else {	
-			sockfd_java = connect_socket(spotify_addr, spotify_port);
-
-			if (sockfd_java == -1) {
-				fprintf(stderr, "Error trying to connecto to sptofiy-controller %s %s\n",spotify_addr,spotify_port);
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-
-	free(spotify_addr);
-	free(spotify_port);
 
 	struct squeue *q_raw_msg = NULL;
 	struct squeue *q_proc_msg = NULL;
