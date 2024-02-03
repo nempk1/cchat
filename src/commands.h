@@ -10,11 +10,17 @@
 struct command_str {
 	const char *cmd_str;
 	void* (*fun_ptr)(void*);
+	int has_arg;
 };
 
 struct command_hash {
 	unsigned long hash;
 	void* (*fun_ptr)(void*);
+};
+
+struct cmd_arg {
+	struct twitch_msg *msg;
+	const char *arg;
 };
 
 /* Creating custom command bellow */
