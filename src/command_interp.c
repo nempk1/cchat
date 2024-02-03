@@ -5,7 +5,7 @@
 #include "message.h"
 #include "strlcat.h"
 
-void*show_commands(void*);
+static void*show_commands(void*);
 
 static struct command_str cmd_list[] = 
 {
@@ -20,7 +20,7 @@ static struct command_str cmd_list[] =
 	{NULL, NULL, 0}
 };
 
-void *show_commands(void *data)
+static void *show_commands(void *data)
 {
 
 	struct twitch_msg *msg = data;
