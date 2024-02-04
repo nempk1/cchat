@@ -1,70 +1,23 @@
 #include "config.h"
 #include "connect_socket.h"
+#include "simple_config.h"
 
 int
 config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 {
-	config_t cfg;
+	struct s_config *cfg = config_new();
 	const char *oauth, *oauth_name, *channel_chat;
 	int enable_tag = true;
 	int enable_command = true;
 	int enable_membership = true;
 
-	config_init(&cfg);
 
 	/* Read the file. 
 	 * If there is an error, report it and exit. */
-  	if(!config_read_file(&cfg, filepath)) {
-    		fprintf(stderr, "%s:%d - %s\n",
-				config_error_file(&cfg),
-				config_error_line(&cfg),
-			       	config_error_text(&cfg));
-
-    		config_destroy(&cfg);
-	    return -1;
-  	}
-
-	if(!config_lookup_string(&cfg, "oauth", &oauth)) {
-		fprintf(stderr, "No 'oauth' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-	if(!config_lookup_string(&cfg, "oauth_nick", &oauth_name)) {
-		fprintf(stderr, "No 'oauth_nick' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-
-	if(!config_lookup_string(&cfg, "channel", &channel_chat)) {
-		fprintf(stderr, "No 'channel' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-
-
-	if(!config_lookup_bool(&cfg, "tags", &enable_tag)) {
-		fprintf(stderr, "No 'tags' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-
-	if(strcmp(oauth, "") == 0) {
-		fprintf(stderr, "No value set to 'oauth' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-	
-	if(strcmp(oauth_name, "") == 0) {
-		fprintf(stderr, "No value set to 'oauth_nick' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return -1;
-	} 
-
-	if(strcmp(channel_chat, "") == 0) {
-		fprintf(stderr, "No value set to 'channel' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return -1;
-	} 
+  	config_parse_file(filepath, cfg);
+	oauth = config_get_string("oauth", cfg);
+	oauth_name = config_get_string("oauth_nick", cfg);
+	channel_chat = config_get_string("channel", cfg);
 
 	char *result[3] = { NULL };
 	asprintf(&result[0], "%s%s\r\n", OAUTH_PREFIX, oauth);
@@ -100,87 +53,18 @@ config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 	return 0;
 }
 
-struct p_cfg *
-config_parse_file(const char *filepath)
+struct p_cfg*
+pconfig_parse_file(const char *filepath) 
 {
-	config_t cfg;
-
-	const char *oauth, *oauth_name, *channel_chat;
-	int enable_tag = true;
-	int enable_command = true;
-
-	config_init(&cfg);
-
-	/* Read the file. 
-	 * If there is an error, report it and exit. */
-  	if(!config_read_file(&cfg, filepath)) {
-    		fprintf(stderr, "%s:%d - %s\n",
-				config_error_file(&cfg),
-				config_error_line(&cfg),
-			       	config_error_text(&cfg));
-
-    		config_destroy(&cfg);
-		return NULL;
-  	}
-
-	if(!config_lookup_string(&cfg, "oauth", &oauth)) {
-		fprintf(stderr, "No 'oauth' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-	if(!config_lookup_string(&cfg, "oauth_nick", &oauth_name)) {
-		fprintf(stderr, "No 'oauth_name' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-
-	if(!config_lookup_string(&cfg, "channel", &channel_chat)) {
-		fprintf(stderr, "No 'channel' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-
-
-	if(!config_lookup_bool(&cfg, "tags", &enable_tag)) {
-		fprintf(stderr, "No 'enable_tag' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	   	return NULL;
-	} 
-	if(!config_lookup_bool(&cfg, "commands", &enable_command)) {
-		fprintf(stderr, "No 'enable_command' setting in config file %s !!\n",filepath); 		
-		config_destroy(&cfg);
-	   	return NULL;
-	}
-	if(strcmp(oauth, "") == 0) {
-		fprintf(stderr, "No value set to 'oauth' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-	
-	if(strcmp(oauth_name, "") == 0) {
-		fprintf(stderr, "No value set to 'oauth_name' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-
-	if(strcmp(channel_chat, "") == 0) {
-		fprintf(stderr, "No value set to 'channel_chat' in config file %s !!\n", filepath);	
-		config_destroy(&cfg);
-	    	return NULL;
-	} 
-
+	struct s_config *cfg = config_new();
+	config_parse_file(filepath, cfg);
 	struct p_cfg *result = malloc(sizeof(*result));
-	if(!result) {
-		config_destroy(&cfg);
-		fputs("Could not allocate memory for p_cfg\n",stderr);
-	    	exit(EXIT_FAILURE);
-	}
 
-	result->oauth_nick = strdup(oauth_name);
-	result->channel = strdup(channel_chat);
+	result->oauth_nick = strdup(config_get_string("oauth_nick", cfg));
+	result->channel = strdup(config_get_string("channel",cfg));
 	result->commands = true;
 	result->tags = true;
-	result->oauth = strdup(oauth);
+	result->oauth = strdup(config_get_string("oauth", cfg));
 
 	if(result->oauth == NULL ||
 		result->oauth_nick == NULL ||
@@ -192,8 +76,7 @@ config_parse_file(const char *filepath)
 		free(result);
 		return NULL;		
 	}
-	
-	config_destroy(&cfg);
 
+	config_destroy(&cfg);
 	return result;
 }

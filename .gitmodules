@@ -4,3 +4,6 @@
 [submodule "src/queue"]
 	path = src/queue
 	url = https://github.com/nempk1/queue
+[submodule "src/simple_config"]
+	path = src/simple_config
+	url = git@github.com:nempk1/simple_config.git

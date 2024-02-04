@@ -5,7 +5,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include <libconfig.h>
 
 #include "connect_socket.h"
 
@@ -31,5 +30,5 @@ extern int
 config_send(struct T_SSL *, const char *, const char *);  
 
 extern struct p_cfg *
-config_parse_file(const char *);
+pconfig_parse_file(const char *);
 #endif

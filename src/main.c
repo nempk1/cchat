@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	free(irc_port);
 	free(irc_address);
 
-	cfg = config_parse_file(config_file);
+	cfg = pconfig_parse_file(config_file);
 	if(!cfg) {
 		printf("Error parsing config file %s\n", config_file);
 		exit(EXIT_FAILURE);	
