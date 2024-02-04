@@ -42,14 +42,14 @@ and check if the includes are being located to.
 
 1. Open the cchat.cfg.sample file in the configs/ directory
 1. Add the channel, oauth and oauth_nick variables that are necessary
-2. Twitch oauth code and account name related with it
-2. you can get one for you in the below link
-2. https://twitchapps.com/tmi
-2. you should only put the part after "PASS oauth:"
-3. like in this one PASS oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-3. whould be oauth = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-3. if you want you can choose the channel to join in the running arguments.
-1. After that just run it
+1. Twitch oauth code and account name related with it
+-  you can get one for you in the below link
+-  https://twitchapps.com/tmi
+-  you should only put the part after "PASS oauth:"
+-  like in this one PASS oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+-  whould be oauth = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+4. if you want you can choose the channel to join in the running arguments.
+4. After that just run it
 ```sh
 ./bin/cchat -i irc.chat.twitch.tv -p 6697 -c configs/cchat.cfg
 # You change use the --channel argument to change the chat to join
