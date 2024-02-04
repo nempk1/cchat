@@ -14,7 +14,6 @@ A simple twitch chat reader for you terminal.
 To compile this abomination you will need the following:
 
 - [gmake](https://www.gnu.org/software/make/)
-- [libconfig](http://hyperrealm.github.io/libconfig/)
 - GCC or CLANG
 
 ## Clone & Compiling
