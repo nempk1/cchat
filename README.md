@@ -37,7 +37,7 @@ and check if the includes are being located to.
 
 ## Config & Usage
 
-1. Open the sample cchat.cfg file in the configs/ directory
+1. Open the cchat.cfg.sample file in the configs/ directory
 1. Add the channel, oauth and oauth_nick variables that are necessary
 2. if you want you can choose the channel to join in the running arguments.
 1. After that just run it
