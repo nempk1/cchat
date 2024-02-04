@@ -19,14 +19,14 @@ CFLAGS += $(INC_FLAGS) -Wall -O2 -D_FORTIFY_SOURCE=2 -Wformat-security \
 	  -Wbad-function-cast -Wpointer-arith -fstack-protector-strong \
 	  -Wuninitialized -Wvla -Wpedantic 
 
-GCC_FLAGS = -fanalyzer -mshstk
+GCC_FLAGS = -mshstk #-fanalyzer 
 
 CLANG_FLAGS = -fstack-clash-protection -Wthread-safety -Wthread-safety-beta \
 	      -Widiomatic-parentheses -Wpointer-arith -Wunreachable-code-aggressive \
 	      -Wconditional-uninitialized  -Warray-bounds-pointer-arithmetic 	\
 	      -Wshift-sign-overflow -Wcomma  
 
-LDFLAGS ?= $(addprefix -L,$(LIB_DIR)) -lpthread -lssl -lcrypto -lconfig \
+LDFLAGS ?= $(addprefix -L,$(LIB_DIR)) -lpthread -lssl -lcrypto \
 	   -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,separate-code
 	   
 ifeq ($(shell $(CC) -v 2>&1 | grep -c "gcc version"),1)
