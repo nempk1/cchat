@@ -15,8 +15,7 @@ To compile this abomination you will need the following:
 
 - [gmake](https://www.gnu.org/software/make/)
 - [OpenSSL](https://www.openssl.org/)
-  OR
-- [LibreSSL](https://www.libressl.org/)
+  OR [LibreSSL](https://www.libressl.org/)
 - GCC or CLANG
 
 ## Clone & Compiling
