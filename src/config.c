@@ -5,7 +5,7 @@
 int
 config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 {
-	struct s_config *cfg = config_new();
+	struct s_config *cfg = NULL;
 	const char *oauth, *oauth_name, *channel_chat;
 	int enable_tag = true;
 	int enable_command = true;
@@ -14,7 +14,7 @@ config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 
 	/* Read the file. 
 	 * If there is an error, report it and exit. */
-  	config_parse_file(filepath, cfg);
+  	config_init(filepath, &cfg);
 	oauth = config_get_string("oauth", cfg);
 	oauth_name = config_get_string("oauth_nick", cfg);
 	channel_chat = config_get_string("channel", cfg);
@@ -56,9 +56,9 @@ config_send(struct T_SSL *conn, const char *filepath, const char *channel_name)
 struct p_cfg*
 pconfig_parse_file(const char *filepath) 
 {
-	struct s_config *cfg = config_new();
-	config_parse_file(filepath, cfg);
+	struct s_config *cfg = NULL;
 	struct p_cfg *result = malloc(sizeof(*result));
+	config_init(filepath, &cfg);
 
 	result->oauth_nick = strdup(config_get_string("oauth_nick", cfg));
 	result->channel = strdup(config_get_string("channel",cfg));
