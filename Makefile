@@ -6,18 +6,18 @@ BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
 LIB_DIR ?= 
 
-SRCS := $(shell find $(SRC_DIRS) -name *.c)
+SRCS != find $(SRC_DIRS) -name *.c
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-INC_DIRS := $(shell find ./src -type d -not -path "./*.git*")
+INC_DIRS != find ./src -type d -not -path "./*.git*"
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CFLAGS += $(INC_FLAGS) -Wall -O2 -D_FORTIFY_SOURCE=2 -Wformat-security \
 	  -fPIE -Wextra -Wpedantic -Wcast-qual -Walloca \
 	  -Wnull-dereference -Wstack-protector -Wvla -Wfloat-equal 	\
 	  -Wbad-function-cast -Wpointer-arith -fstack-protector-strong \
-	  -Wuninitialized -Wvla -Wpedantic 
+	  -Wuninitialized -Wvla -Wpedantic -Wno-unused-command-line-argument
 
 GCC_FLAGS = -mshstk #-fanalyzer 
 
