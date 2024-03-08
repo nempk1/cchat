@@ -1,3 +1,22 @@
+
+// Channel to join at start
+// Can you can change it using
+// --channel flag at the start
+
 channel = "channel"
+
+// OAUTH that you can get at the link
+// https://twitchapps.com/tmi
+//
+// example:
+// 	PASS:XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// 	whould be
+// 	XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//
+
 oauth = "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+// NICK of the account used to get the 
+// oauth code
+
 oauth_nick = "nick_of_oauth_acc"
