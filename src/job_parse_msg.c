@@ -44,7 +44,7 @@ const struct cmd_hash command_hash[] =
 	{CAP, 0xB87D899},
 	{RECONNECT, 0xD32BF926},
 	{ROOMSTATE, 0xA52C87A3,},
-	{USERNOTICE, 0x6325C926,},
+	{USERNOTICE_, 0x6325C926,},
 	{WHISPER, 0xDA158E07},
 	{NO_ID, 0xDAF672},
 	{ 0, 0 },
